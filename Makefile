@@ -20,7 +20,7 @@ $(KERNEL): boot/boot.asm | $(BUILD)
 		$(BUILD)/kernel.o -o $(KERNEL)
 
 $(ISO): $(KERNEL)
-	grub-mkrescue -o $(ISO) $(ISO_DIR) >/dev/null 2>&1
+	grub-mkrescue -o $(ISO) $(ISO_DIR)
 	@echo "Built $(ISO)"
 
 clean:
