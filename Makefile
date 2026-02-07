@@ -9,15 +9,14 @@ ISO      = simple-os.iso
 
 all: $(ISO)
 
-# Ensure build directory exists
 $(BUILD):
 	mkdir -p $(BUILD)
 
-$(KERNEL): boot/boot.asm | $(BUILD)
+$(KERNEL): boot/boot.asm linker.ld | $(BUILD)
 	mkdir -p $(ISO_DIR)/boot
 	$(ASM) -f elf32 boot/boot.asm -o $(BUILD)/kernel.o
-	$(LD) -m elf_i386 -Ttext 0x100000 --oformat binary \
-		$(BUILD)/kernel.o -o $(KERNEL)
+	# REMOVED --oformat binary and added -T linker.ld
+	$(LD) -m elf_i386 -T linker.ld $(BUILD)/kernel.o -o $(KERNEL)
 
 $(ISO): $(KERNEL)
 	grub-mkrescue -o $(ISO) $(ISO_DIR)
