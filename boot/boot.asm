@@ -1,29 +1,26 @@
-; boot.asm
-; Simple bootloader that prints "Hello, World!"
+BITS 32
+SECTION .multiboot
+align 4
+    dd 0x1BADB002
+    dd 0x0
+    dd -(0x1BADB002)
 
-BITS 16
-ORG 0x7C00
+SECTION .text
+global _start
 
-start:
-    mov si, message      ; Point SI to the message
+_start:
+    mov esi, message
 
-print_loop:
-    lodsb                ; Load byte at SI into AL, increment SI
-    cmp al, 0
-    je hang               ; If null terminator, stop
-    mov ah, 0x0E          ; BIOS teletype output
+.print:
+    lodsb
+    test al, al
+    jz .hang
+    mov ah, 0x0E
     int 0x10
-    jmp print_loop
+    jmp .print
 
-hang:
+.hang:
     cli
     hlt
 
-message:
-    db "Hello, World!", 0
-
-; Pad to 510 bytes
-times 510 - ($ - $$) db 0
-
-; Boot signature
-dw 0xAA55
+message db "Hello, World!", 0
