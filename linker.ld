@@ -1,13 +1,16 @@
 ENTRY(_start)
-OUTPUT_FORMAT(elf32-i386)
-OUTPUT_ARCH(i386)
-
-SECTIONS {
+SECTIONS
+{
+    /* GRUB loads kernels at 1MB by convention */
     . = 1M;
-    .text : {
-        *(.multiboot)
+
+    .text :
+    {
+        /* Force the multiboot header to the front */
+        KEEP(*(.multiboot))
         *(.text)
     }
+
     .data : { *(.data) }
     .bss  : { *(.bss) }
 }
