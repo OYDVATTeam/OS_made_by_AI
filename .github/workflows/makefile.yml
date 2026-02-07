@@ -20,7 +20,8 @@ jobs:
             nasm \
             grub-pc-bin \
             xorriso \
-            binutils
+            binutils \
+            mtools
 
       - name: Build ISO
         run: make
