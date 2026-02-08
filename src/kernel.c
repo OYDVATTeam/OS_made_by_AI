@@ -1,23 +1,32 @@
-// kernel.c
-#include "vga.h"
-#include "mouse.h"
-#include "font.h"
+#include "vga.h"   // Handles pixels, rects, windows, and cursor
+#include "mouse.h" // Handles mouse_init, mouse_poll, etc.
+#include "font.h"  // Handles draw_string, draw_char
 
-/* * External declarations. 
- * We don't define these here; we just tell the compiler 
- * they live in another file (gui.c).
- */
-extern void draw_window(int x, int y, int w, int h, const char* title);
-extern void draw_mouse_cursor(int x, int y);
+unsigned char saved_pixels[4];
 
-/* Utility to draw a simple integer for coordinates */
+void hide_mouse(int x, int y) {
+    if (x < 0 || x >= SCREEN_WIDTH - 1 || y < 0 || y >= SCREEN_HEIGHT - 1) return;
+    put_pixel(x, y,         saved_pixels[0]);
+    put_pixel(x + 1, y,     saved_pixels[1]);
+    put_pixel(x, y + 1,     saved_pixels[2]);
+    put_pixel(x + 1, y + 1, saved_pixels[3]);
+}
+
+void show_mouse(int x, int y) {
+    if (x < 0 || x >= SCREEN_WIDTH - 1 || y < 0 || y >= SCREEN_HEIGHT - 1) return;
+    saved_pixels[0] = get_pixel(x, y);
+    saved_pixels[1] = get_pixel(x + 1, y);
+    saved_pixels[2] = get_pixel(x, y + 1);
+    saved_pixels[3] = get_pixel(x + 1, y + 1);
+    draw_mouse_cursor(x, y);
+}
+
 void draw_number(int x, int y, int num, unsigned char color) {
-    char buf[5];
+    char buf[6];
     int i = 0;
-    if (num == 0) { 
-        buf[i++] = '0'; 
-    } else {
-        while (num > 0 && i < 4) {
+    if (num == 0) buf[i++] = '0';
+    else {
+        while (num > 0 && i < 5) {
             buf[i++] = (num % 10) + '0';
             num /= 10;
         }
@@ -30,61 +39,45 @@ void draw_number(int x, int y, int num, unsigned char color) {
 
 static void delay(int count) {
     volatile int i;
-    for (i = 0; i < count; i++) {
-        asm volatile ("nop");
-    }
+    for (i = 0; i < count; i++) { asm volatile ("nop"); }
 }
 
 void kernel_main(void) {
-    /* 1. Initial Setup */
     fill_screen(COLOR_CYAN);
-    draw_window(80, 50, 160, 100, "System");
-    
-    draw_string(90, 70, "AI OS Loaded", COLOR_BLACK);
-    draw_string(10, 10, "Mouse X/Y:", COLOR_WHITE);
+    draw_window(80, 50, 160, 100, "System Window");
+    draw_string(10, 10, "POS:", COLOR_WHITE);
 
     mouse_init();
 
     int anim_x = 90;
     int direction = 1;
-    int last_mouse_x = -1;
-    int last_mouse_y = -1;
+    int last_mx = 0, last_my = 0;
+
+    show_mouse(last_mx, last_my);
 
     while (1) {
-        /* --- 2. GUI Animation --- */
-        draw_rect(anim_x, 120, 20, 10, COLOR_GRAY); // Erase with window body color
+        hide_mouse(last_mx, last_my);
+
+        // GUI Animation
+        draw_rect(anim_x, 130, 20, 10, COLOR_GRAY);
         anim_x += direction;
         if (anim_x > 210 || anim_x < 90) direction *= -1;
-        draw_rect(anim_x, 120, 20, 10, COLOR_WHITE); // Draw moving bar
+        draw_rect(anim_x, 130, 20, 10, COLOR_WHITE);
 
-        /* --- 3. Mouse Handling --- */
+        // Mouse Handling
         mouse_poll();
         int mx = mouse_get_x();
         int my = mouse_get_y();
 
-        /* Erase old cursor */
-        if (last_mouse_x >= 0 && last_mouse_y >= 0) {
-            unsigned char bg = COLOR_CYAN;
-            // Check if last position was inside the window (80,50 to 240,150)
-            if (last_mouse_x >= 80 && last_mouse_x <= 240 && 
-                last_mouse_y >= 50 && last_mouse_y <= 150) {
-                bg = COLOR_GRAY;
-            }
-            // Using 2x2 erase to match the 2x2 cursor
-            draw_rect(last_mouse_x, last_mouse_y, 2, 2, bg);
-        }
+        // Update Text
+        draw_rect(45, 10, 80, 8, COLOR_CYAN);
+        draw_number(45, 10, mx, COLOR_WHITE);
+        draw_char(75, 10, ',', COLOR_WHITE);
+        draw_number(85, 10, my, COLOR_WHITE);
 
-        /* Update Coordinates Text */
-        draw_rect(90, 10, 40, 8, COLOR_CYAN); // Clear text area
-        draw_number(90, 10, mx, COLOR_WHITE);
-        draw_number(120, 10, my, COLOR_WHITE);
+        show_mouse(mx, my);
+        last_mx = mx; last_my = my;
 
-        /* Draw new cursor */
-        draw_mouse_cursor(mx, my);
-
-        last_mouse_x = mx;
-        last_mouse_y = my;
-
-        delay(60000);
+        delay(50000);
     }
 }
