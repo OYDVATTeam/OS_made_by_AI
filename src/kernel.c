@@ -1,56 +1,39 @@
 // kernel.c
-#define VGA_WIDTH       80
-#define VGA_HEIGHT      25
-#define VGA_BUFFER      ((volatile unsigned short *)0xB8000)
+#include "vga.h"
 
-#define COLOR_WHITE_ON_BLACK    0x0F
+// Forward declarations of GUI helpers
+void draw_window(int x, int y, int w, int h, const char* title);
 
-// Forward declarations
-static void delay(void);
-static void clear_line(void);
-static void print_at(const char *str);
-
-// ───────────────────────────────────────────────
-// Very rough busy-wait delay (~0.1–0.4 s depending on CPU)
-// ───────────────────────────────────────────────
-static void delay(void) {
-    volatile unsigned int i;
-    for (i = 0; i < 0xB8FA0; i++) {
-        asm volatile("" : : : "memory");   // prevent optimization
+static void delay(int count) {
+    volatile int i;
+    for (i = 0; i < count; i++) {
+        asm volatile("nop");
     }
 }
 
-// Clear ~16 characters worth of space (our animation area)
-static void clear_line(void) {
-    volatile unsigned short *pos = VGA_BUFFER;
-    for (int i = 0; i < 32; i++) {         // 16 chars × 2 bytes
-        pos[i] = 0x0F20;                   // space + white-on-black
-    }
-}
-
-static void print_at(const char *str) {
-    volatile unsigned short *pos = VGA_BUFFER;
-    while (*str) {
-        *pos++ = (*str++) | (COLOR_WHITE_ON_BLACK << 8);
-    }
-}
-
-// ───────────────────────────────────────────────
-// Main kernel function – called from assembly
-// ───────────────────────────────────────────────
 void kernel_main(void) {
-    const char *frames[] = {
-        "Hello >",
-        "Hello -",
-        "Hello <",
-        "Hello |"
-    };
+    // 1. Fill the screen with Cyan
+    fill_screen(COLOR_CYAN);
+
+    // 2. Draw a "GUI Window" in the center
+    draw_window(80, 50, 160, 100, "System");
+
+    int anim_x = 90;
+    int direction = 1;
 
     while (1) {
-        for (int i = 0; i < 4; i++) {
-            clear_line();
-            print_at(frames[i]);
-            delay();
+        // Erase old frame (draw over with window body color)
+        draw_rect(anim_x, 120, 20, 10, COLOR_GRAY);
+
+        // Update position
+        anim_x += direction;
+        if (anim_x > 210 || anim_x < 90) {
+            direction *= -1;
         }
+
+        // Draw new frame (a small white bar moving inside the window)
+        draw_rect(anim_x, 120, 20, 10, COLOR_WHITE);
+
+        delay(100000);
     }
 }
