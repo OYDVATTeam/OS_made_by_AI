@@ -18,5 +18,10 @@
 void put_pixel(int x, int y, unsigned char color);
 void fill_screen(unsigned char color);
 void draw_rect(int x, int y, int w, int h, unsigned char color);
+static inline unsigned char get_pixel(int x, int y) {
+    if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) return 0;
+    unsigned char *vram = (unsigned char *)VRAM_ADDRESS;
+    return vram[y * SCREEN_WIDTH + x];
+}
 
 #endif
