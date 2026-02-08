@@ -44,3 +44,10 @@ align 16
 stack_bottom:
     resb 16384                ; 16 KiB stack — enough for start
 stack_top:
+
+; ───────────────────────────────────────────────
+; Tell the linker: this code/object does NOT require an executable stack
+; This silences the warning on modern ld and marks the stack as non-executable
+; (safe for a freestanding kernel with no stack-smashing gadgets here)
+; ───────────────────────────────────────────────
+section .note.GNU-stack noalloc noexec nowrite progbits
