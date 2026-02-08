@@ -6,9 +6,9 @@ Finished To-dos:
 2. ASCII art
 3. BIOS C code
 4. GUI
+5. Mouse driver
 
 To-dos unfinished: \
-5. Mouse driver \
 6. Fonts \
 7. Desktop icons \
 8. Taskbar \
