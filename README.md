@@ -2,10 +2,10 @@
 A experiment to see how good AI makes an operating system, to help people decide on using AI or not 
 
 Finished To-dos: 
-1. Simple Hello World 
+1. Simple Hello World \
+2. ASCII art
 
 To-dos unfinished: \
-2. ASCII art \
 3. BIOS C code \
 4. GUI \
 5. Mouse driver \
