@@ -45,9 +45,8 @@ $(KERNEL_ELF): $(OBJ) linker.ld | iso_dirs
 $(KERNEL_BIN): $(KERNEL_ELF) | iso_dirs
 	cp $< $@                            # copy ELF to /boot/kernel.bin in ISO tree
 
-$(ISO): $(KERNEL_BIN) grub.cfg | iso_dirs
-	cp grub.cfg $(GRUB_DIR)/grub.cfg    # place config where GRUB expects it: /boot/grub/grub.cfg
-	grub-mkrescue -o $@ $(ISO_DIR) 2>/dev/null || echo "grub-mkrescue failed — check xorriso/grub-pc-bin installed"
+$(ISO): $(KERNEL_BIN) iso_dirs
+	grub-mkrescue -o $@ $(ISO_DIR) || echo "grub-mkrescue failed — check xorriso/grub-pc-bin installed"
 	@echo "ISO created: $@ (kernel at /boot/kernel.bin, config at /boot/grub/grub.cfg inside ISO)"
 
 clean:
