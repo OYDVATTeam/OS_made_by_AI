@@ -1,5 +1,6 @@
 // gui.c
 #include "vga.h"
+#include "font.h"
 
 void put_pixel(int x, int y, unsigned char color) {
     if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) return;
