@@ -2,12 +2,6 @@
 #include "vga.h"
 #include "font.h"
 
-void put_pixel(int x, int y, unsigned char color) {
-    if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) return;
-    unsigned char *vram = (unsigned char *)VRAM_ADDRESS;
-    vram[y * SCREEN_WIDTH + x] = color;
-}
-
 void fill_screen(unsigned char color) {
     unsigned char *vram = (unsigned char *)VRAM_ADDRESS;
     for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
