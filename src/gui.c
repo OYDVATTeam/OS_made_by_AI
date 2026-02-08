@@ -32,3 +32,9 @@ void draw_window(int x, int y, int w, int h, const char* title) {
     // Close Button (Little red square)
     draw_rect(x + w - 10, y + 2, 8, 8, COLOR_RED);
 }
+
+void draw_mouse_cursor(int x, int y) {
+    put_pixel(x, y, COLOR_WHITE);
+    put_pixel(x + 1, y, COLOR_WHITE);
+    put_pixel(x, y + 1, COLOR_WHITE);
+}
