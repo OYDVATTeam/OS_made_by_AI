@@ -1,10 +1,9 @@
-# Makefile – kernel in src/, grub.cfg → iso/boot/grub/, linker.ld at root
+# Makefile – Simple 32-bit OS kernel with mouse support
 
 CC       = gcc
 LD       = ld
 ASM      = nasm
 
-# Added -Isrc so headers in src/ are found automatically
 CFLAGS   = -m32 -ffreestanding -fno-pic -fno-stack-protector \
            -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables \
            -Wall -Wextra -O2 -nostdinc -nostdlib -nodefaultlibs \
@@ -22,11 +21,13 @@ KERNEL_ELF = $(BUILD)/kernel.elf
 KERNEL_BIN = $(BOOT_DIR)/kernel.bin
 ISO        = simple-os.iso
 
-# Updated to include the new gui.c file
-ASM_SRC    = boot/boot.asm
-C_SRCS     = src/kernel.c src/gui.c
-# Automatically generate object paths for all C files
-OBJ        = $(BUILD)/boot.o $(patsubst src/%.c, $(BUILD)/%.o, $(C_SRCS))
+ASM_SRC = boot/boot.asm
+C_SRCS  = src/kernel.c src/gui.c src/mouse.c
+
+OBJ = $(BUILD)/boot.o \
+      $(BUILD)/kernel.o \
+      $(BUILD)/gui.o \
+      $(BUILD)/mouse.o
 
 .PHONY: all clean run iso_dirs
 
@@ -39,8 +40,13 @@ iso_dirs:
 $(BUILD)/boot.o: $(ASM_SRC) | iso_dirs
 	$(ASM) -f elf32 $< -o $@
 
-# Pattern rule to compile any C file in src/ to build/
-$(BUILD)/%.o: src/%.c | iso_dirs
+$(BUILD)/kernel.o: src/kernel.c | iso_dirs
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD)/gui.o: src/gui.c | iso_dirs
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD)/mouse.o: src/mouse.c | iso_dirs
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_ELF): $(OBJ) linker.ld | iso_dirs
@@ -50,8 +56,12 @@ $(KERNEL_BIN): $(KERNEL_ELF) | iso_dirs
 	cp $< $@
 
 $(ISO): $(KERNEL_BIN) iso_dirs
-	grub-mkrescue -o $@ $(ISO_DIR) || echo "grub-mkrescue failed — check xorriso/grub-pc-bin installed"
-	@echo "ISO created: $@ (kernel at /boot/kernel.bin)"
+	grub-mkrescue -o $@ $(ISO_DIR) || \
+	echo "grub-mkrescue failed — install xorriso and grub-pc-bin"
+	@echo "ISO created: $@"
+
+run: $(ISO)
+	qemu-system-i386 -cdrom $(ISO)
 
 clean:
 	rm -rf $(BUILD) $(ISO) $(ISO_DIR)
