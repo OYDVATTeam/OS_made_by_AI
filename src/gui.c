@@ -40,4 +40,5 @@ void draw_mouse_cursor(int x, int y) {
     put_pixel(x, y, COLOR_WHITE);
     put_pixel(x + 1, y, COLOR_WHITE);
     put_pixel(x, y + 1, COLOR_WHITE);
+    put_pixel(x + 1, y + 1, COLOR_WHITE);
 }
