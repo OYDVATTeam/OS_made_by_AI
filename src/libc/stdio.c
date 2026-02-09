@@ -1,65 +1,69 @@
 #include "stdio.h"
 #include "string.h"
+#include "stdarg.h"
 
-/**
- * itoa: Convert integer to string.
- * @n: The number to convert
- * @s: The buffer to store the string
- * @base: The base (10 for decimal, 16 for hex)
- */
+// Helper: Integer to ASCII
 void itoa(int n, char* s, int base) {
     int i = 0;
     int sign = n;
+    if (sign < 0 && base == 10) n = -n;
 
-    // Handle negative numbers for base 10
-    if (sign < 0 && base == 10) {
-        n = -n;
-    }
-
-    // Convert digits in reverse order
     do {
         int digit = n % base;
         s[i++] = (digit > 9) ? (digit - 10) + 'A' : digit + '0';
     } while ((n /= base) > 0);
 
-    // Add negative sign
-    if (sign < 0 && base == 10) {
-        s[i++] = '-';
-    }
-
+    if (sign < 0 && base == 10) s[i++] = '-';
     s[i] = '\0';
 
-    // Reverse the string
-    int start = 0;
-    int end = i - 1;
-    while (start < end) {
-        char temp = s[start];
-        s[start] = s[end];
-        s[end] = temp;
-        start++;
-        end--;
+    // Reverse
+    for (int j = 0, k = i - 1; j < k; j++, k--) {
+        char temp = s[j];
+        s[j] = s[k];
+        s[k] = temp;
     }
 }
 
-/**
- * A very basic helper to format a string with one integer.
- * Useful for GUI labels like: format_label(buf, "X: ", mx);
- */
-void format_label(char* buf, const char* prefix, int val) {
-    char num_buf[12];
-    itoa(val, num_buf, 10);
-    
-    // Copy prefix
-    int i = 0;
-    while (prefix[i]) {
-        buf[i] = prefix[i];
-        i++;
+// Helper: Formats string into a buffer
+int vsnprintf(char* str, size_t size, const char* format, va_list ap) {
+    size_t i = 0;
+    const char* f = format;
+
+    while (*f && i < size - 1) {
+        if (*f == '%') {
+            f++;
+            if (*f == 'd') {
+                char num[32];
+                itoa(va_arg(ap, int), num, 10);
+                size_t len = strlen(num);
+                for (size_t j = 0; j < len && i < size - 1; j++) str[i++] = num[j];
+            } else if (*f == 'x') {
+                char num[32];
+                itoa(va_arg(ap, int), num, 16);
+                size_t len = strlen(num);
+                for (size_t j = 0; j < len && i < size - 1; j++) str[i++] = num[j];
+            } else if (*f == 's') {
+                char* s_arg = va_arg(ap, char*);
+                while (*s_arg && i < size - 1) str[i++] = *s_arg++;
+            } else if (*f == 'c') {
+                char c_arg = (char)va_arg(ap, int); // char promotes to int in varargs
+                if (i < size - 1) str[i++] = c_arg;
+            }
+        } else {
+            str[i++] = *f;
+        }
+        f++;
     }
-    
-    // Copy number
-    int j = 0;
-    while (num_buf[j]) {
-        buf[i++] = num_buf[j++];
-    }
-    buf[i] = '\0';
+    str[i] = '\0';
+    return i;
+}
+
+// Public: printf to string
+int sprintf(char* str, const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    // We use a large size limit since we don't know the buffer size here
+    int ret = vsnprintf(str, 65535, format, args);
+    va_end(args);
+    return ret;
 }
