@@ -35,6 +35,29 @@ static unsigned char mouse_read(void) {
     return inb(PS2_DATA);
 }
 
+// A small 4x4 buffer to store pixels hidden by the cursor
+static unsigned char mouse_back_buffer[16];
+
+void show_mouse(int x, int y) {
+    // 1. Save what is currently on the screen at this spot
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            mouse_back_buffer[i * 2 + j] = get_pixel(x + j, y + i);
+        }
+    }
+    // 2. Draw the actual cursor (defined in gui.c or locally)
+    draw_mouse_cursor(x, y);
+}
+
+void hide_mouse(int x, int y) {
+    // Restore the saved pixels back to the screen
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            put_pixel(x + j, y + i, mouse_back_buffer[i * 2 + j]);
+        }
+    }
+}
+
 void mouse_init(void) {
     /* Enable auxiliary device */
     wait_input();
