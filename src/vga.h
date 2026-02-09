@@ -23,6 +23,8 @@
 #define COLOR_YELLOW  0x0E  // The one that was missing!
 #define COLOR_WHITE   0x0F
 
+extern unsigned char* vram;
+
 // Inlined Pixel Functions
 static inline void put_pixel(int x, int y, unsigned char color) {
     if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) return;
