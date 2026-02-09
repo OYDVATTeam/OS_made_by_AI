@@ -8,10 +8,10 @@ Finished To-dos:
 4. GUI
 5. Mouse driver
 6. Fonts
+7. Desktop icons
+8. Taskbar
 
 To-dos unfinished: \
-7. Desktop icons \
-8. Taskbar \
 9. Applications Menu \
 10. USB driver \
 11. the C library \
