@@ -7,22 +7,10 @@ BITS 32
 SECTION .multiboot
 align 4
 multiboot_header:
-    dd 0x1BADB002               ; magic: Multiboot 1
-    dd 0x00000005               ; flags: bit 0 (align) + bit 2 (request video mode)
-    dd -(0x1BADB002 + 0x00000005) ; checksum
-
-    ; These fields are required when bit 2 is set in flags
-    dd 0                        ; header_addr (unused for ELF)
-    dd 0                        ; load_addr
-    dd 0                        ; load_end_addr
-    dd 0                        ; bss_end_addr
-    dd 0                        ; entry_addr
-    
-    ; Graphics fields
-    dd 0                        ; mode_type (0 = linear graphics)
-    dd 320                      ; width
-    dd 200                      ; height
-    dd 8                        ; depth (8-bit colors, 256 color palette)
+    dd 0x1BADB002               ; magic
+    dd 0x00000003               ; flags: bits 0 and 1 (Align + Mem Info)
+    dd -(0x1BADB002 + 0x00000003) ; checksum
+    ; Remove the DD 0, 320, 200, 8 etc. fields entirely
 
 ; ─────────────────────────────────────────────────────────────────────────────
 ; Entry point
