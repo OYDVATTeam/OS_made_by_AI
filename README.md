@@ -10,10 +10,10 @@ Finished To-dos:
 6. Fonts
 7. Desktop icons
 8. Taskbar
+9. Applications Menu
+10. USB driver
 
 To-dos unfinished: \
-9. Applications Menu \
-10. USB driver \
 11. the C library \
 12. the C++ library \
 13. the Notepad application \
