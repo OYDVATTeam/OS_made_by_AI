@@ -1,83 +1,63 @@
-#include "vga.h"   // Handles pixels, rects, windows, and cursor
-#include "mouse.h" // Handles mouse_init, mouse_poll, etc.
-#include "font.h"  // Handles draw_string, draw_char
+#include "vga.h"
+#include "mouse.h"
+#include "font.h"
 
-unsigned char saved_pixels[4];
-
-void hide_mouse(int x, int y) {
-    if (x < 0 || x >= SCREEN_WIDTH - 1 || y < 0 || y >= SCREEN_HEIGHT - 1) return;
-    put_pixel(x, y,         saved_pixels[0]);
-    put_pixel(x + 1, y,     saved_pixels[1]);
-    put_pixel(x, y + 1,     saved_pixels[2]);
-    put_pixel(x + 1, y + 1, saved_pixels[3]);
-}
-
-void show_mouse(int x, int y) {
-    if (x < 0 || x >= SCREEN_WIDTH - 1 || y < 0 || y >= SCREEN_HEIGHT - 1) return;
-    saved_pixels[0] = get_pixel(x, y);
-    saved_pixels[1] = get_pixel(x + 1, y);
-    saved_pixels[2] = get_pixel(x, y + 1);
-    saved_pixels[3] = get_pixel(x + 1, y + 1);
-    draw_mouse_cursor(x, y);
-}
-
-void draw_number(int x, int y, int num, unsigned char color) {
-    char buf[6];
-    int i = 0;
-    if (num == 0) buf[i++] = '0';
-    else {
-        while (num > 0 && i < 5) {
-            buf[i++] = (num % 10) + '0';
-            num /= 10;
-        }
-    }
-    while (i > 0) {
-        draw_char(x, y, buf[--i], color);
-        x += 8;
-    }
-}
-
-static void delay(int count) {
+// Simple delay function to prevent the CPU from eating 100% in QEMU
+void delay(int count) {
     volatile int i;
-    for (i = 0; i < count; i++) { asm volatile ("nop"); }
+    for (i = 0; i < count; i++) {
+        __asm__("nop");
+    }
 }
 
 void kernel_main(void) {
+    // 1. Initialize Graphics
     fill_screen(COLOR_CYAN);
+    
+    // 2. Draw Desktop Environment
+    draw_taskbar();
+    draw_icon_trash(20, 20);
     draw_window(80, 50, 160, 100, "System Window");
-    draw_string(10, 10, "POS:", COLOR_WHITE);
-
+    
+    // 3. Setup Mouse
     mouse_init();
+    
+    int last_mx = 160, last_my = 100;
+    int mx = 160, my = 100;
 
-    int anim_x = 90;
-    int direction = 1;
-    int last_mx = 0, last_my = 0;
-
-    show_mouse(last_mx, last_my);
+    // Initial draw of the cursor
+    show_mouse(mx, my);
 
     while (1) {
+        // --- PREPARE ---
+        // Hide the mouse at its old position to restore the background
         hide_mouse(last_mx, last_my);
 
-        // GUI Animation
-        draw_rect(anim_x, 130, 20, 10, COLOR_GRAY);
-        anim_x += direction;
-        if (anim_x > 210 || anim_x < 90) direction *= -1;
-        draw_rect(anim_x, 130, 20, 10, COLOR_WHITE);
-
-        // Mouse Handling
+        // --- UPDATE ---
+        // Poll the hardware for new mouse data
         mouse_poll();
-        int mx = mouse_get_x();
-        int my = mouse_get_y();
+        mx = mouse_get_x();
+        my = mouse_get_y();
 
-        // Update Text
-        draw_rect(45, 10, 80, 8, COLOR_CYAN);
-        draw_number(45, 10, mx, COLOR_WHITE);
-        draw_char(75, 10, ',', COLOR_WHITE);
-        draw_number(85, 10, my, COLOR_WHITE);
-
+        // --- UI OVERLAYS ---
+        // Display Mouse Coordinates at (250, 5) for debugging/positioning
+        // We draw a small cyan box first to clear old numbers
+        draw_rect(240, 5, 75, 10, COLOR_CYAN);
+        
+        // Custom draw_number doesn't exist yet? Use draw_char/string for now:
+        draw_string(240, 5, "X:", COLOR_WHITE);
+        // Note: If you don't have a 'draw_number' function yet, 
+        // we can just stick to the labels for now.
+        
+        // --- DRAW ---
+        // Show the mouse at the new position
         show_mouse(mx, my);
-        last_mx = mx; last_my = my;
 
+        // Store current position for the next frame's 'hide_mouse'
+        last_mx = mx;
+        last_my = my;
+
+        // Small delay to keep things smooth
         delay(50000);
     }
 }
