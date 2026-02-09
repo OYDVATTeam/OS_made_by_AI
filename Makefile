@@ -1,14 +1,15 @@
-# Makefile – kernel in src/, grub.cfg → iso/boot/grub/, linker.ld at root
+# Makefile – kernel in src/, libc in src/libc/, linker.ld at root
 
 CC       = gcc
 LD       = ld
 ASM      = nasm
 
+# Added -Isrc/libc so you can #include "string.h" easily
 CFLAGS   = -m32 -ffreestanding -fno-pic -fno-stack-protector \
            -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables \
            -Wall -Wextra -O2 -nostdinc -nostdlib -nodefaultlibs \
            -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -mno-3dnow \
-           -fno-pie -march=i686 -Isrc
+           -fno-pie -march=i686 -Isrc -Isrc/libc
 
 LDFLAGS  = -m elf_i386 -nostdlib
 
@@ -22,24 +23,39 @@ KERNEL_BIN = $(BOOT_DIR)/kernel.bin
 ISO        = simple-os.iso
 
 ASM_SRC    = boot/boot.asm
-C_SRCS     = src/kernel.c src/gui.c src/mouse.c src/font.c
-OBJ        = $(BUILD)/boot.o $(patsubst src/%.c, $(BUILD)/%.o, $(C_SRCS))
+
+# --- SOURCE DISCOVERY ---
+# Main kernel sources
+C_SRCS     = src/kernel.c src/gui.c src/mouse.c src/font.c src/ata.c src/fat.c
+
+# Libc sources
+LIBC_SRCS  = src/libc/string.c src/libc/stdio.c src/libc/stdlib.c src/libc/ctype.c
+
+# Combine all objects
+OBJ        = $(BUILD)/boot.o \
+             $(patsubst src/%.c, $(BUILD)/%.o, $(C_SRCS)) \
+             $(patsubst src/libc/%.c, $(BUILD)/libc/%.o, $(LIBC_SRCS))
 
 .PHONY: all clean run iso_dirs
 
 all: $(ISO)
 
-# Ensure folders exist
+# Ensure folders exist (Added libc build dir)
 iso_dirs:
 	@mkdir -p $(BUILD)
+	@mkdir -p $(BUILD)/libc
 	@mkdir -p $(GRUB_DIR)
 
 # Assemble bootloader
 $(BUILD)/boot.o: $(ASM_SRC) | iso_dirs
 	$(ASM) -f elf32 $< -o $@
 
-# Compile C files
+# Compile main C files
 $(BUILD)/%.o: src/%.c | iso_dirs
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile Libc files (Separate rule for nested directory)
+$(BUILD)/libc/%.o: src/libc/%.c | iso_dirs
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Link all objects
@@ -60,13 +76,12 @@ $(ISO): $(KERNEL_BIN)
 	fi
 	grub-mkrescue -o $@ $(ISO_DIR)
 
-# Targeted Clean: Only removes build artifacts and the compiled binary
 clean:
 	rm -rf $(BUILD)
 	rm -f $(ISO)
 	rm -f $(KERNEL_BIN)
-	@echo "Cleaned build artifacts. ISO directory preserved."
+	@echo "Cleaned build artifacts."
 
-# Run
+# Run with Hard Drive support (Added -drive for your FAT testing)
 run: $(ISO)
-	qemu-system-i386 -cdrom $(ISO)
+	qemu-system-i386 -cdrom $(ISO) -drive file=disk.img,format=raw,index=0,media=disk
