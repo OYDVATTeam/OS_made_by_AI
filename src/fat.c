@@ -74,7 +74,7 @@ void list_files(int x, int y) {
 
     for (int i = 0; i < 16; i++) {
         if (entries[i].name[0] == 0x00) break; // End of dir
-        if (entries[i].name[0] == 0xE5) continue; // Deleted
+        if ((unsigned char)entries[i].name[0] == 0xE5) continue;
         if (entries[i].attributes & 0x0F) continue; // Long filename LFN (skip)
 
         // Format name "FILENAME.EXT"
