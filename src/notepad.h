@@ -5,5 +5,6 @@
 
 void notepad_open(const char* filename);
 void notepad_draw();
+void notepad_close();
 
 #endif
