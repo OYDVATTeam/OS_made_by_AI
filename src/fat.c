@@ -1,5 +1,6 @@
 #include "fat.h"
 #include "vga.h"
+#include "font.h"
 #include "libc/string.h"
 #include "libc/stdio.h"
 #include "libc/ctype.h"
