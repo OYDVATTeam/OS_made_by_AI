@@ -70,6 +70,12 @@ void hide_mouse(int x, int y) {
     }
 }
 
+void mouse_get_state(int *x, int *y, int *button) {
+    *x = mouse_get_x();
+    *y = mouse_get_y();
+    *button = mouse_get_button();
+}
+
 // 4. GETTERS
 int mouse_get_button() { return last_button_state; }
 int mouse_get_x()      { return global_mouse_x; }
