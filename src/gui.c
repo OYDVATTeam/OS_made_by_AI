@@ -36,3 +36,35 @@ void draw_mouse_cursor(int x, int y) {
     put_pixel(x, y + 1, COLOR_WHITE);
     put_pixel(x + 1, y + 1, COLOR_WHITE);
 }
+
+void draw_taskbar() {
+    // Background bar
+    draw_rect(0, 184, 320, 16, COLOR_GRAY);
+    // 3D Top Border
+    draw_rect(0, 184, 320, 1, COLOR_WHITE);
+    // Start Button
+    draw_rect(2, 186, 42, 12, COLOR_BLUE);
+    draw_string(5, 188, "START", COLOR_WHITE);
+    // Clock Area
+    draw_rect(270, 186, 48, 12, COLOR_DARK_GRAY);
+    draw_string(275, 188, "12:00", COLOR_WHITE);
+}
+
+void draw_icon_trash(int x, int y) {
+    // The Bin Body
+    draw_rect(x + 4, y + 6, 12, 14, COLOR_WHITE);    
+    draw_rect(x + 5, y + 7, 10, 12, COLOR_DARK_GRAY); 
+    
+    // Vertical details (the "ribs" of the bin)
+    put_pixel(x + 7, y + 9, COLOR_GRAY);
+    put_pixel(x + 7, y + 11, COLOR_GRAY);
+    put_pixel(x + 10, y + 9, COLOR_GRAY);
+    put_pixel(x + 10, y + 11, COLOR_GRAY);
+
+    // The Lid
+    draw_rect(x + 2, y + 3, 16, 2, COLOR_GRAY);      
+    draw_rect(x + 7, y + 1, 6, 2, COLOR_GRAY);       
+
+    // Text Label
+    draw_string(x - 8, y + 22, "Trash Can", COLOR_WHITE);
+}
