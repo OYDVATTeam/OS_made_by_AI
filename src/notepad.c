@@ -44,3 +44,7 @@ void notepad_draw() {
     // We can use a basic wrap or just draw lines
     draw_string(win_x + 5, win_y + 20, file_content, COLOR_BLACK);
 }
+
+void notepad_close() {
+    is_open = 0;
+}
