@@ -88,3 +88,19 @@ void draw_start_menu() {
     // 6. Shutdown
     draw_string(20, 170, "Shutdown", COLOR_WHITE);
 }
+
+void draw_number(int x, int y, int num, unsigned char color) {
+    char buf[10];
+    int i = 0;
+    if (num == 0) {
+        draw_char(x, y, '0', color);
+        return;
+    }
+    while (num > 0 && i < 10) {
+        buf[i++] = (num % 10) + '0';
+        num /= 10;
+    }
+    for (int j = 0; j < i; j++) {
+        draw_char(x + (i - 1 - j) * 8, y, buf[j], color);
+    }
+}
