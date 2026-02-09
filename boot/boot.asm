@@ -8,9 +8,21 @@ SECTION .multiboot
 align 4
 multiboot_header:
     dd 0x1BADB002               ; magic
-    dd 0x00000003               ; flags: bits 0 and 1 (Align + Mem Info)
-    dd -(0x1BADB002 + 0x00000003) ; checksum
-    ; Remove the DD 0, 320, 200, 8 etc. fields entirely
+    dd 0x00000007               ; flags: Align(0) + MemInfo(1) + Video(2)
+    dd -(0x1BADB002 + 0x00000007) ; checksum
+
+    ; Graphics fields (Required because bit 2 is set)
+    dd 0                        ; header_addr (unused for ELF)
+    dd 0                        ; load_addr
+    dd 0                        ; load_end_addr
+    dd 0                        ; bss_end_addr
+    dd 0                        ; entry_addr
+    
+    ; The specific request for 320x200x8
+    dd 0                        ; mode_type (0 = graphics mode)
+    dd 320                      ; width
+    dd 200                      ; height
+    dd 8                        ; depth (256 colors)
 
 ; ─────────────────────────────────────────────────────────────────────────────
 ; Entry point
