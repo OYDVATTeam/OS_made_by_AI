@@ -35,5 +35,6 @@ void draw_mouse_cursor(int x, int y);
 // Add these to the end of the prototypes in vga.h
 void draw_taskbar();
 void draw_icon_trash(int x, int y);
+void draw_start_menu();
 
 #endif
