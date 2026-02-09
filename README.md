@@ -14,8 +14,6 @@ Finished To-dos:
 10. USB driver
 11. the C library
 12. FAT driver (its the simplest of them all)
+13. Notepad
 
-To-dos unfinished: \
-13. the Notepad application \
-14. A file manager \
-... the list goes on 
+Project finished! You may edit it now...
