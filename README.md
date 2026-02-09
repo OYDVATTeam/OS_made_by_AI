@@ -12,11 +12,11 @@ Finished To-dos:
 8. Taskbar
 9. Applications Menu
 10. USB driver
+11. the C library
+12. FAT driver (its the simplest of them all)
 
 To-dos unfinished: \
-11. the C library \
-12. the C++ library \
-13. the Notepad application \
-14. A file manager \
-15. FAT driver (its the simplest of them all) \
+13. the C++ library \
+14. the Notepad application \
+15. A file manager \
 ... the list goes on 
