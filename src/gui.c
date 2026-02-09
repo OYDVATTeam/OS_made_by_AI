@@ -104,3 +104,15 @@ void draw_number(int x, int y, int num, unsigned char color) {
         draw_char(x + (i - 1 - j) * 8, y, buf[j], color);
     }
 }
+
+// 1. Add this! The kernel calls it to initialize video.
+void vga_init() {
+    // We are already in Mode 13h, so we just clear the screen to start fresh.
+    fill_screen(COLOR_BLACK);
+}
+
+// 2. Add this! It's just a wrapper or rename of your draw_rect.
+// The linker is specifically looking for "fill_rect".
+void fill_rect(int x, int y, int w, int h, unsigned char color) {
+    draw_rect(x, y, w, h, color);
+}
