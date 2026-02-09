@@ -68,3 +68,23 @@ void draw_icon_trash(int x, int y) {
     // Text Label
     draw_string(x - 8, y + 22, "Trash Can", COLOR_WHITE);
 }
+
+void draw_start_menu() {
+    // 1. Shadow (for that 3D look)
+    draw_rect(5, 105, 80, 80, COLOR_BLACK);
+    // 2. Menu Body (Gray rectangle)
+    draw_rect(2, 102, 80, 80, COLOR_GRAY);
+    // 3. Side strip (The classic dark blue vertical bar on the left)
+    draw_rect(2, 102, 15, 80, COLOR_BLUE);
+    
+    // 4. Menu Items
+    draw_string(20, 110, "Programs", COLOR_WHITE);
+    draw_string(20, 130, "Settings", COLOR_WHITE);
+    draw_string(20, 150, "Files", COLOR_WHITE);
+    
+    // 5. Divider Line
+    draw_rect(18, 165, 60, 1, COLOR_DARK_GRAY);
+    
+    // 6. Shutdown
+    draw_string(20, 170, "Shutdown", COLOR_WHITE);
+}
