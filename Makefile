@@ -26,7 +26,7 @@ ASM_SRC    = boot/boot.asm
 
 # --- SOURCE DISCOVERY ---
 # Main kernel sources
-C_SRCS     = src/kernel.c src/gui.c src/mouse.c src/font.c src/ata.c src/fat.c
+C_SRCS     = src/kernel.c src/gui.c src/mouse.c src/font.c src/ata.c src/fat.c src/notepad.c
 
 # Libc sources
 LIBC_SRCS  = src/libc/string.c src/libc/stdio.c src/libc/stdlib.c src/libc/ctype.c
