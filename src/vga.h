@@ -26,7 +26,6 @@
 // Inlined Pixel Functions
 static inline void put_pixel(int x, int y, unsigned char color) {
     if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) return;
-    unsigned char *vram = (unsigned char *)VRAM_ADDRESS;
     vram[y * SCREEN_WIDTH + x] = color;
 }
 
