@@ -58,6 +58,14 @@ void hide_mouse(int x, int y) {
     }
 }
 
+
+static int mouse_buttons = 0; 
+
+// Add this function:
+int mouse_get_button() {
+    return mouse_buttons;
+}
+
 void mouse_init(void) {
     /* Enable auxiliary device */
     wait_input();
