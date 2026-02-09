@@ -114,5 +114,15 @@ void vga_init() {
 // 2. Add this! It's just a wrapper or rename of your draw_rect.
 // The linker is specifically looking for "fill_rect".
 void fill_rect(int x, int y, int w, int h, unsigned char color) {
-    draw_rect(x, y, w, h, color);
+    unsigned char *vram = (unsigned char *)0xA0000;
+    for (int i = 0; i < h; i++) {
+        for (int j = 0; j < w; j++) {
+            // Manual bounds check
+            int cur_x = x + j;
+            int cur_y = y + i;
+            if(cur_x >= 0 && cur_x < 320 && cur_y >= 0 && cur_y < 200) {
+                vram[cur_y * 320 + cur_x] = color;
+            }
+        }
+    }
 }
