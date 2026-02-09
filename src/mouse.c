@@ -58,12 +58,36 @@ void hide_mouse(int x, int y) {
     }
 }
 
-
-static int mouse_buttons = 0; 
-
-// Add this function:
 int mouse_get_button() {
-    return mouse_buttons;
+    /* REAL HARDWARE CHECK:
+       We check Port 0x64 (Status Register). 
+       If Bit 0 is 1, the mouse has sent a hardware packet.
+    */
+    while (inb(0x64) & 0x01) {
+        // A PS/2 packet is 3 bytes. We must read all 3 or the mouse will lock up.
+        unsigned char status = inb(0x60); // Byte 0: Buttons
+        char rel_x = (char)inb(0x60);    // Byte 1: X movement
+        char rel_y = (char)inb(0x60);    // Byte 2: Y movement
+
+        // Update the button state from the hardware bit (Bit 0 = Left Click)
+        last_button_state = (status & 0x01);
+
+        // Update coordinates so movement still works while checking buttons
+        global_mouse_x += rel_x;
+        global_mouse_y -= rel_y; 
+        
+        // Screen clamping
+        if (global_mouse_x < 0) global_mouse_x = 0;
+        if (global_mouse_y < 0) global_mouse_y = 0;
+        if (global_mouse_x > 319) global_mouse_x = 319;
+        if (global_mouse_y > 199) global_mouse_y = 199;
+    }
+
+    /* Return the actual state. 
+       If no new packet arrived, it returns the LAST state the hardware sent.
+       This prevents the "0 is not clicked" bug that closes your menu.
+    */
+    return last_button_state;
 }
 
 void mouse_init(void) {
