@@ -2,6 +2,8 @@
 #include "vga.h"
 #include "font.h"
 
+unsigned char* vram;
+
 void fill_screen(unsigned char color) {
     unsigned char *vram = (unsigned char *)VRAM_ADDRESS;
     for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
