@@ -11,8 +11,8 @@ typedef signed short       int16_t;
 typedef signed int         int32_t;
 typedef signed long long   int64_t;
 
-// Define size_t for string functions
 typedef uint32_t           size_t;
+typedef int32_t            ssize_t;
 
 #define NULL ((void*)0)
 
