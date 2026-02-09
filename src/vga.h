@@ -36,9 +36,12 @@ static inline unsigned char get_pixel(int x, int y) {
     return vram[y * SCREEN_WIDTH + x];
 }
 
-/* --- ADD THESE PROTOTYPES BELOW --- */
+/* --- PROTOTYPES --- */
+void vga_init(); // Added: Needed by kernel.c
 void fill_screen(unsigned char color);
+void fill_rect(int x, int y, int w, int h, unsigned char color);     // Added: Was missing!
 void draw_rect(int x, int y, int w, int h, unsigned char color);
+void draw_string(int x, int y, const char* str, unsigned char color); // Added: Was missing!
 void draw_window(int x, int y, int w, int h, const char* title);
 void draw_mouse_cursor(int x, int y);
 void draw_number(int x, int y, int num, unsigned char color);
