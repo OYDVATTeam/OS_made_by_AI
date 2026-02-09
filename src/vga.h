@@ -32,5 +32,6 @@ void fill_screen(unsigned char color);
 void draw_rect(int x, int y, int w, int h, unsigned char color);
 void draw_window(int x, int y, int w, int h, const char* title);
 void draw_mouse_cursor(int x, int y);
+void draw_icon_trash(int x, int y);
 
 #endif
