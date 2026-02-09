@@ -16,7 +16,6 @@ Finished To-dos:
 12. FAT driver (its the simplest of them all)
 
 To-dos unfinished: \
-13. the C++ library \
-14. the Notepad application \
-15. A file manager \
+13. the Notepad application \
+14. A file manager \
 ... the list goes on 
