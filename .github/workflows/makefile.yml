@@ -21,7 +21,9 @@ jobs:
             grub-pc-bin \
             xorriso \
             binutils \
-            mtools
+            mtools \
+            apt-build \
+            debhelper
 
       - name: Build ISO
         run: make
