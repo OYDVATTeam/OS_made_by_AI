@@ -4,7 +4,7 @@
 #include "libc/string.h"
 #include "libc/stdio.h"
 
-#define MAX_FILE_SIZE 4096
+#define MAX_FILE_SIZE 8096
 static char file_content[MAX_FILE_SIZE];
 static char current_filename[13];
 static int is_open = 0;
