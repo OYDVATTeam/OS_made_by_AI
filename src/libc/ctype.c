@@ -1,3 +1,6 @@
+// making a c library from scratch? pfft, people would rather create hello world that recreate something like glibc
+// sadly, there is no return, i am making the c library
+
 #include "ctype.h"
 
 int isspace(int c) {
