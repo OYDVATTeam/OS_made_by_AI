@@ -41,7 +41,7 @@ _start:
     ; This allows you to find the actual Framebuffer address if it's not at 0xA0000
     push ebx 
     
-    ; Call C entry point
+    ; why the hell did i name the kernel entry this...
     call kernel_main
 
 .hang:
@@ -57,4 +57,5 @@ stack_bottom:
     resb 16384                  ; 16 KiB stack
 stack_top:
 
+; to shut up linker
 section .note.GNU-stack noalloc noexec nowrite progbits
